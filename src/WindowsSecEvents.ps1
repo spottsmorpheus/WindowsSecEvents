@@ -89,7 +89,7 @@ Function Get-WindowsAuditEvents {
     # Setup the xPath Query for fast filtering of EventLog
 
     $EventQuery = [String]::Join(" or ",$($EventList | Foreach-Object {"EventID=$_"}))
-    Write-Host $EventQuery
+    Write-Verbose $EventQuery
 
     $TimeSpan = (New-TimeSpan -Minutes $RecentMinutes).TotalMilliseconds
 
@@ -113,13 +113,11 @@ Function Get-WindowsAuditEvents {
     
     # Construct the xPath filter
     $xPath = "Event[System[{0}]]{1}" -f $xSysFilter, $xEventDataFilter
-    Write-Host "Using xPath Filter $($xPath)" -ForegroundColor Green
+    Write-Verbose "Using xPath Filter $($xPath)"
     $XmlQuery = $XmlQueryTemplate -f $xPath
 
     if ($AsXML) {
-        Write-Host "Using XML Query Filter: Paste this filter into Event Viewer to view events"
-        write-Host ""
-        Write-Host "$($XmlQuery)" -ForegroundColor Green
+        Write-Host "AsXML Parameter: Returning XML Query Filter for use in Event Viewer ..." -ForegroundColor Green
         return $XmlQuery
     }
 
