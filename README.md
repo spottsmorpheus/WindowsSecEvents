@@ -2,25 +2,25 @@
 
 Powershell Function for querying Morpheus Related Windows Security Events while troubleshooting AD Identity Sources.
 
-To load the script Dot Source the WindoewsSecEvents.ps1 file into a powershell session
+To load the script Dot Source the WindowsSecEvents.ps1 file into a powershell session
 
 ```
-PS> . .\WindoewsSecEvents.ps1
+PS> . .\WindowsSecEvents.ps1
 ```
 
-**NOTE** to run these Powershell Scripts the account must be and Administrator with access to query the Security Event log on the target computer.
+**NOTE** to run these Powershell Scripts the account must be and Administrator with access to query the Security Event log on the target computer. Effectivly, for querying the Domain Controller Security log the user will most likely be a Domain Admin
 
 ## Loading Directly from GitHub URL
 
 It is possible to load these Functions directly from GitHub if your Endpoint has an Internet connection. Use the following  Powershell to download and Install a Dynamic Module directly from a GitHub Url
 
 ```
-$Uri = "https://raw.githubusercontent.com/spottsmorpheus/"
-$PrgressPreference = "SilentlyContinue"
+$Uri = "https://raw.githubusercontent.com/spottsmorpheus/WindowsSecEvents/main/src/WindowsSecEvents.ps1"
+$ProgressPreference = "SilentlyContinue"
 # Load Powershell code from GitHub Uri and invoke as a temporary Module
 $Response = Invoke-WebRequest -Uri $Uri -UseBasicParsing
 if ($Response.StatusCode -eq 200) {
-    $Module = New-Module -Name "MorpheusAgentFunctions" -ScriptBlock ([ScriptBlock]::Create($Response.Content))
+    $Module = New-Module -Name "WindowsSecEvents" -ScriptBlock ([ScriptBlock]::Create($Response.Content))
 }
 ```
 
@@ -38,8 +38,8 @@ SYNOPSIS
 
 
 SYNTAX
-    Get-WindowsAuditEvents [[-EventList] <Int32[]>] [[-RecentMinutes] <Int32>] [[-Computer] <String>] [[-IPAddress] <String>] [[-TargetUser] <String>] [-AsXML] [-AsSummary]
-    [-AsJson] [<CommonParameters>]
+    Get-WindowsAuditEvents [[-EventList] <Int32[]>] [[-RecentMinutes] <Int32>] [[-Computer] <String>]
+    [[-IPAddress] <String>] [[-TargetUser] <String>] [-AsXML] [-AsSummary] [-AsJson] [<CommonParameters>]
 
 
 DESCRIPTION
@@ -125,8 +125,25 @@ Using XML Query Filter: Paste this filter into Event Viewer to view events
 - Copy the XML output by the Powershell Function
 - Open Event Viewer. From the Actions menu select Filter current Log.
 - Select the XML tab.
-- Check the Edit XML Manually checkbox. Click Yes to acknowledge the warning
+- Check the **Edit query manually** checkbox. Click Yes to acknowledge the warning
 - Clear the current contents and paste in the XML output from the Powershell function
 - Click OK
 
 Refresh the Event Viewer to see the latest events matching the filter
+
+## Significant Event Ids
+
+### Login Success Event 4624
+
+To check for a successful login on Domain Controller MYDC01 by user morphuser in the last 5 minutes returning results as json
+
+```
+Get-WindowsAuditEvents -Recent 5 -Computer "MYDC01" -TargetUser "morphuser" -Eventlist @(4624) -AsJson
+```
+### Login Failure Event 4625
+
+To check for login failures on Domain Controller MYDC01 from appliance 10.10.10.10 in the last 20 minutes returning results as Event Summary
+
+```
+Get-WindowsAuditEvents -Recent 20 -Computer "MYDC01" -IPAddress "10.10.10.10" -Eventlist @(4625) -AsSummary
+```
