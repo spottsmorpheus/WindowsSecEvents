@@ -271,7 +271,6 @@ Function Get-EventdataProperties {
         [Object[]]$Event
     )
 
-
     Begin {
         $SecurityConstants = @{
             "%%1832" = "Identification";
@@ -287,7 +286,7 @@ Function Get-EventdataProperties {
             "%%1848" = "Off";
             "%%1849" = "Auto";
             "%%2305" = "The specified user account has expired.";
-            "%%2309" = "The specified account's password has expired.";
+            "%%2309" = "The specified account password has expired.";
             "%%2310" = "Account currently disabled.";
             "%%2311" = "Account logon time restriction violation.";
             "%%2312" = "User not allowed to logon at this computer.";
