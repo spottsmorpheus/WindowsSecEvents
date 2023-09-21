@@ -36,14 +36,14 @@ $XmlQueryTemplate = @'
 </QueryList>
 '@
 
-Function Get-WindowsAuditEvents {
+Function Get-WindowsAuditEvent {
     <#
     .SYNOPSIS
         Searches the Windows Security Event log on COMPUTER (parameter) for a list of security event ids
         Can be useful in troubleshooting ActiveDirectory Identity Sources
         
     .PARAMETER EventList
-        A list (array) of Security event ids to search for. The default is events @(4624,4625,4776,4768,4769)
+        A list (array) of Security event ids to search for. The default is events @(4624,4625,4776,4768,4769,4740)
 
     .PARAMETER RecentMinutes
         Allows events to be filtered from the last n minutes. The default is for events reported in the last 10 minutes 

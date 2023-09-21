@@ -8,7 +8,7 @@ To load the script Dot Source the WindowsSecEvents.ps1 file into a powershell se
 PS> . .\WindowsSecEvents.ps1
 ```
 
-**NOTE** to run these Powershell Scripts the account must be and Administrator with access to query the Security Event log on the target computer. When querying the Domain Controller Security log the user will most likely be a Domain Admin.
+**NOTE** to run these Powershell Scripts the account must be and Administrator with access to query the Security Event log on the target computer. When querying the Domain Controller Security log the user will most likely be a Domain Admin. The scripts are best used in an interactive Powershell session which should be elavated (run as Administrator)
 
 ## Loading Directly from GitHub URL
 
@@ -26,11 +26,11 @@ if ($Response.StatusCode -eq 200) {
 
 ## About the Functions
 
-### Get-WindowsAuditEvents
+### Get-WindowsAuditEvent
 
 ```
 NAME
-    Get-WindowsAuditEvents
+    Get-WindowsAuditEvent
 
 SYNOPSIS
     Searches the Windows Security Event log on COMPUTER (parameter) for a list of security event ids
@@ -38,7 +38,7 @@ SYNOPSIS
 
 
 SYNTAX
-    Get-WindowsAuditEvents [[-EventList] <Int32[]>] [[-RecentMinutes] <Int32>] [[-Computer] <String>]
+    Get-WindowsAuditEvent [[-EventList] <Int32[]>] [[-RecentMinutes] <Int32>] [[-Computer] <String>]
     [[-IPAddress] <String>] [[-TargetUser] <String>] [-AsXML] [-AsSummary] [-AsJson] [<CommonParameters>]
 
 
@@ -47,7 +47,7 @@ DESCRIPTION
 
 PARAMETERS
     -EventList <Int32[]>
-        A list (array) of Security event ids to search for. The default is events @(4624,4625,4776,4768,4769)
+        A list (array) of Security event ids to search for. The default is events @(4624,4625,4776,4768,4769,4740)
 
     -RecentMinutes <Int32>
         Allows events to be filtered from the last n minutes. The default is for events reported in the last 10 minutes
@@ -106,10 +106,10 @@ PARAMETERS
 
 ### Generating an XML Search filter
 
-**Get-WindowsAuditEvents** can be used to generate XML which can be used directly in Event Viewer. As an example
+**Get-WindowsAuditEvent** can be used to generate XML which can be used directly in Event Viewer. As an example
 
 ```
-Get-WindowsAuditEvents -Recent 3 -IPAddress "10.10.10.10" -TargetUser "spotts" -AsXML
+Get-WindowsAuditEvent -Recent 3 -IPAddress "10.10.10.10" -TargetUser "spotts" -AsXML
 
 Using XML Query Filter: Paste this filter into Event Viewer to view events
 
@@ -138,7 +138,7 @@ Refresh the Event Viewer to see the latest events matching the filter
 To check for a successful login on Domain Controller MYDC01 by user morphuser in the last 5 minutes returning results as json
 
 ```
-Get-WindowsAuditEvents -Recent 5 -Computer "MYDC01" -TargetUser "morphuser" -Eventlist @(4624) -AsJson
+Get-WindowsAuditEvent -Recent 5 -Computer "MYDC01" -TargetUser "morphuser" -Eventlist @(4624) -AsJson
 ```
 
 ### Login Failure Event 4625
@@ -148,13 +148,13 @@ To check for login failures on Domain Controller MYDC01 from appliance 10.10.10.
 In this example below the check the Status,SubStatus and FailureReason. In this example the accounts password must be changed on the next login preventing the account logging into Morpheus
 
 ```
-Get-WindowsAuditEvents -Recent 20 -Computer "MYDC01" -IPAddress "10.10.10.10" -Eventlist @(4625) -AsJson
+Get-WindowsAuditEvent -Recent 20 -Computer "MYDC01" -IPAddress "10.10.10.10" -Eventlist @(4625) -AsJson
 {
     "RecordId":  51599589,
     "TimeCreated":  "2023-09-21T00:54:10.668",
     "Id":  4625,
     "MachineName":  "MYDC01.example.com",
-    "TargetUserName":  "morphuser1",
+    "TargetUserName":  "morphuser",
     "TargetDomainName":  "EXAMPLE",
     "IpAddress":  "10.10.10.10",
     "IpPort":  "37372",
@@ -167,7 +167,7 @@ Get-WindowsAuditEvents -Recent 20 -Computer "MYDC01" -IPAddress "10.10.10.10" -E
                       "SubjectDomainName":  "EXAMPLE",
                       "SubjectLogonId":  "0x3e7",
                       "TargetUserSid":  "S-1-0-0",
-                      "TargetUserName":  "morphuser1",
+                      "TargetUserName":  "morphuser",
                       "TargetDomainName":  "EXAMPLE",
                       "Status":  "0xc0000224",
                       "FailureReason":  "The specified account password has expired.",
