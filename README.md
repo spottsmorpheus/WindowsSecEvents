@@ -155,7 +155,7 @@ Get-WindowsAuditEvents -Recent 20 -Computer "MYDC01" -IPAddress "10.10.10.10" -E
     "Id":  4625,
     "MachineName":  "MYDC01.example.com",
     "TargetUserName":  "morphuser1",
-    "TargetDomainName":  "TEST",
+    "TargetDomainName":  "EXAMPLE",
     "IpAddress":  "10.10.10.10",
     "IpPort":  "37372",
     "Status":  "User is required to change password at next logon",
