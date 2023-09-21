@@ -131,18 +131,18 @@ Function Get-WindowsAuditEvents {
                 $EventData = Get-EventdataProperties -Event $Event
                 [PSCustomObject]@{
                     #Audit            = if ($Event.Id -eq 4624) {"Success"} else {"Fail"};
-                    recordId         = $Event.RecordId;
-                    timeCreated      = $Event.TimeCreated.ToString("yyyy-MM-ddTHH:mm:ss.fff");
-                    id               = $Event.Id;
-                    machineName      = $Event.MachineName;
-                    targetUserName   = $EventData.TargetUserName;
-                    targetDomainName = $EventData.TargetDomainName;
-                    ipAddress        = $EventData.IpAddress;
-                    ipPort           = $EventData.IpPort;
-                    status           = if ($Event.Id -eq 4625) {$Script:StatusCodes.Item($EventData.Status)} else {"-"};
-                    subStatus        = if ($Event.Id -eq 4625) {$Script:StatusCodes.Item($EventData.SubStatus)} else {"-"};
-                    failureReason        = if ($Event.Id -eq 4625) {$Script:StatusCodes.Item($EventData.SubStatus)} else {"-"};
-                    eventData        = $EventData;
+                    RecordId         = $Event.RecordId;
+                    TimeCreated      = $Event.TimeCreated.ToString("yyyy-MM-ddTHH:mm:ss.fff");
+                    Id               = $Event.Id;
+                    MachineName      = $Event.MachineName;
+                    TargetUserName   = $EventData.TargetUserName;
+                    TargetDomainName = $EventData.TargetDomainName;
+                    IpAddress        = $EventData.IpAddress;
+                    IpPort           = $EventData.IpPort;
+                    Status           = if ($Event.Id -eq 4625) {$Script:StatusCodes.Item($EventData.Status)} else {"-"};
+                    SubStatus        = if ($Event.Id -eq 4625) {$Script:StatusCodes.Item($EventData.SubStatus)} else {"-"};
+                    FailureReason    = if ($Event.Id -eq 4625) {$EventData.FailureReason} else {"-"};
+                    EventData        = $EventData;
                 }
             }
             if ($AsJson) {
