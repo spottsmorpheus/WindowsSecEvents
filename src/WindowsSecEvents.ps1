@@ -73,7 +73,7 @@ Function Get-WindowsAuditEvents {
 
     #>     
     param (
-        [int32[]]$EventList=@(4624,4625,4776,4768,4769),
+        [int32[]]$EventList=@(4624,4625,4776,4768,4769,4740),
         [int32]$RecentMinutes = 10,
         [String]$Computer = "localhost",
         [String]$IPAddress,
@@ -131,17 +131,19 @@ Function Get-WindowsAuditEvents {
                 $EventData = Get-EventdataProperties -Event $Event
                 [PSCustomObject]@{
                     #Audit            = if ($Event.Id -eq 4624) {"Success"} else {"Fail"};
-                    RecordId         = $Event.RecordId;
-                    TimeCreated      = $Event.TimeCreated.ToString("yyyy-MM-ddTHH:mm:ss.fff");
-                    Id               = $Event.Id;
-                    MachineName      = $Event.MachineName;
-                    TargetUserName   = $EventData.TargetUserName;
-                    TargetDomainName = $EventData.TargetDomainName;
-                    IpAddress        = $EventData.IpAddress;
-                    IpPort           = $EventData.IpPort;
-                    Status           = if ($Event.Id -eq 4625) {$Script:StatusCodes.Item($EventData.Status)} else {"-"};
-                    SubStatus        = if ($Event.Id -eq 4625) {$Script:StatusCodes.Item($EventData.SubStatus)} else {"-"};
-                    EventData        = $EventData;
+                    recordId         = $Event.RecordId;
+                    timeCreated      = $Event.TimeCreated.ToString("yyyy-MM-ddTHH:mm:ss.fff");
+                    id               = $Event.Id;
+                    M
+                    machineName      = $Event.MachineName;
+                    targetUserName   = $EventData.TargetUserName;
+                    targetDomainName = $EventData.TargetDomainName;
+                    ipAddress        = $EventData.IpAddress;
+                    ipPort           = $EventData.IpPort;
+                    status           = if ($Event.Id -eq 4625) {$Script:StatusCodes.Item($EventData.Status)} else {"-"};
+                    subStatus        = if ($Event.Id -eq 4625) {$Script:StatusCodes.Item($EventData.SubStatus)} else {"-"};
+                    failureReason        = if ($Event.Id -eq 4625) {$Script:StatusCodes.Item($EventData.SubStatus)} else {"-"};
+                    eventData        = $EventData;
                 }
             }
             if ($AsJson) {
@@ -285,6 +287,13 @@ Function Get-EventdataProperties {
             "%%1847" = "DisallowMmConfig";
             "%%1848" = "Off";
             "%%1849" = "Auto";
+            "%%2305" = "The specified user account has expired.";
+            "%%2309" = "The specified account's password has expired.";
+            "%%2310" = "Account currently disabled.";
+            "%%2311" = "Account logon time restriction violation.";
+            "%%2312" = "User not allowed to logon at this computer.";
+            "%%2313" = "Unknown user name or bad password.";
+            "%%2304" = "An Error occurred during Logon."
         }
         $EventData = [System.Collections.Generic.List[Object]]::new()
     }
@@ -304,7 +313,6 @@ Function Get-EventdataProperties {
             }
             $EventData.Add($EventProperties)
         }
-
     }
 
     End {
