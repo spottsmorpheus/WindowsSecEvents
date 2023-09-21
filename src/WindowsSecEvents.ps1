@@ -134,7 +134,6 @@ Function Get-WindowsAuditEvents {
                     recordId         = $Event.RecordId;
                     timeCreated      = $Event.TimeCreated.ToString("yyyy-MM-ddTHH:mm:ss.fff");
                     id               = $Event.Id;
-                    M
                     machineName      = $Event.MachineName;
                     targetUserName   = $EventData.TargetUserName;
                     targetDomainName = $EventData.TargetDomainName;
