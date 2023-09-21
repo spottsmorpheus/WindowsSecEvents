@@ -8,7 +8,7 @@ To load the script Dot Source the WindowsSecEvents.ps1 file into a powershell se
 PS> . .\WindowsSecEvents.ps1
 ```
 
-**NOTE** to run these Powershell Scripts the account must be and Administrator with access to query the Security Event log on the target computer. Effectivly, for querying the Domain Controller Security log the user will most likely be a Domain Admin
+**NOTE** to run these Powershell Scripts the account must be and Administrator with access to query the Security Event log on the target computer. When querying the Domain Controller Security log the user will most likely be a Domain Admin.
 
 ## Loading Directly from GitHub URL
 
@@ -140,10 +140,49 @@ To check for a successful login on Domain Controller MYDC01 by user morphuser in
 ```
 Get-WindowsAuditEvents -Recent 5 -Computer "MYDC01" -TargetUser "morphuser" -Eventlist @(4624) -AsJson
 ```
+
 ### Login Failure Event 4625
 
-To check for login failures on Domain Controller MYDC01 from appliance 10.10.10.10 in the last 20 minutes returning results as Event Summary
+To check for login failures on Domain Controller MYDC01 from appliance 10.10.10.10 in the last 20 minutes returning results as json
+
+In this example below the check the Status,SubStatus and FailureReason. In this example the accounts password must be changed on the next login preventing the account logging into Morpheus
 
 ```
-Get-WindowsAuditEvents -Recent 20 -Computer "MYDC01" -IPAddress "10.10.10.10" -Eventlist @(4625) -AsSummary
+Get-WindowsAuditEvents -Recent 20 -Computer "MYDC01" -IPAddress "10.10.10.10" -Eventlist @(4625) -AsJson
+{
+    "RecordId":  51599589,
+    "TimeCreated":  "2023-09-21T00:54:10.668",
+    "Id":  4625,
+    "MachineName":  "MYDC01.example.com",
+    "TargetUserName":  "morphuser1",
+    "TargetDomainName":  "TEST",
+    "IpAddress":  "10.10.10.10",
+    "IpPort":  "37372",
+    "Status":  "User is required to change password at next logon",
+    "SubStatus":  "Status OK",
+    "FailureReason":  "The specified account password has expired.",
+    "EventData":  {
+                      "SubjectUserSid":  "S-1-5-18",
+                      "SubjectUserName":  "MYDC01$",
+                      "SubjectDomainName":  "EXAMPLE",
+                      "SubjectLogonId":  "0x3e7",
+                      "TargetUserSid":  "S-1-0-0",
+                      "TargetUserName":  "morphuser1",
+                      "TargetDomainName":  "EXAMPLE",
+                      "Status":  "0xc0000224",
+                      "FailureReason":  "The specified account password has expired.",
+                      "SubStatus":  "0x0",
+                      "LogonType":  "3",
+                      "LogonProcessName":  "Advapi  ",
+                      "AuthenticationPackageName":  "MICROSOFT_AUTHENTICATION_PACKAGE_V1_0",
+                      "WorkstationName":  "MYDC01",
+                      "TransmittedServices":  "-",
+                      "LmPackageName":  "-",
+                      "KeyLength":  "0",
+                      "ProcessId":  "0x298",
+                      "ProcessName":  "C:\\Windows\\System32\\lsass.exe",
+                      "IpAddress":  "10.10.10.10",
+                      "IpPort":  "37372"
+                  }
+}
 ```
