@@ -407,7 +407,7 @@ Function Get-WindowsSetupDate{
     if ($AsJson) {
         $ret.installDate = $ret.installDate.ToString("yyyy-MM-ddTHH:mm:ss.fff")
         $ret.installDateUtc = $ret.installDateUtc.ToString("yyyy-MM-ddTHH:mm:ss.fff")
-        return $ret | Convertto-Json
+        return $ret | Select-Object -Property computer, product, installDate, installDateUtc | Convertto-Json
     } else {
         return $ret
     }
