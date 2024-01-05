@@ -317,3 +317,95 @@ Function Get-EventdataProperties {
         return $EventData
     }
 }
+Function Get-WindowsSetupEvents {
+    <#
+    .SYNOPSIS
+        Read the Windows Setup event log file C:\Windows\Panther\setup.etl 
+    .PARAMETER StartDate
+        DateTime after which events will be resturned
+    .PARAMETER AsJson
+        Return results as Json string
+    .OUTPUTS
+        PSCustomObject containing the Event Properties
+
+    #>  
+    [CmdletBinding()]
+    Param (
+        [DateTime]$StartDate,
+        $SetupLog="C:\Windows\Panther\Setup.etl",
+        [Switch]$AsJson
+    )    
+
+    if (Test-Path $SetupLog) {
+        if ($StartDate) {
+            write-Host "Listing Setup events from $($StartDate)"
+        } else {
+           $StartDate = (Get-WindowsSetupDate).installDate.Date
+           write-Host "Listing Setup events from Windows Install Date $($StartDate)"
+        }
+
+        $params = @{
+            Path=$SetupLog;
+            Oldest=$true
+        }
+        # filter out events with no Message - not at all useful
+        $setup = Get-WinEvent @params | Where-Object {$_.TimeCreated -gt $StartDate -and $_.Message}
+        if ($AsJson) {
+            return $setup | Select-Object -Property RecordId, @{N="TimeCreated";E={$_.TimeCreated.ToString("yyyy-MM-ddTHH:mm:ss.fff")}}, Message | Convertto-Json 
+        } else {
+            return $setup | Select-Object -Property RecordId, TimeCreated, Message
+        }
+    } else {
+        Write-Error "Cannot locate Windows Setup Log $($SetupLog)"
+    }
+}
+
+
+Function Get-WindowsSetupDate{
+    <#
+    .SYNOPSIS
+        Read the Windows Install Date from the Registry
+
+    .PARAMETER Computer
+        Read the InstallDate from a remote Computer
+    .PARAMETER AsJson
+        Return results as Json string
+    .OUTPUTS
+        DateTime when the Windows Installation completed
+
+    #>
+    [CmdletBinding()]
+    param (
+        [String]$Computer="",
+        [Switch]$AsJson
+    )
+       
+
+    $SB = {
+        $installTime = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Name "InstallTime").InstallTime
+        $product = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Name "ProductName").ProductName
+        $rtn=[PSCustomObject]@{
+            computer=[Environment]::MachineName;
+            product=$product;
+            installDate = [DateTime]::FromFileTime($installTime)
+            installDateUtc = [DateTime]::FromFileTimeUtc($installTime)
+        }
+        return $rtn
+    }
+    $params = @{
+        ScriptBlock=$SB
+    }
+    if ($Computer) {
+        $params.Add("Computer",$Computer)
+        $params.Add("HideComputerName",$true)
+    }
+    $ret=Invoke-Command @params
+    if ($AsJson) {
+        $ret.installDate = $ret.installDate.ToString("yyyy-MM-ddTHH:mm:ss.fff")
+        $ret.installDateUtc = $ret.installDateUtc.ToString("yyyy-MM-ddTHH:mm:ss.fff")
+        return $ret | Select-Object -Property computer, product, installDate, installDateUtc | Convertto-Json
+    } else {
+        return $ret
+    }
+    
+}

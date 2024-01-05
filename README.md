@@ -186,3 +186,74 @@ Get-WindowsAuditEvent -Recent 20 -Computer "MYDC01" -IPAddress "10.10.10.10" -Ev
                   }
 }
 ```
+
+Added 2 new functions relating to Windows Setup
+
+### Get-WindowsSetupTime 
+Returns the Date and Time the Windows Install completed
+
+```
+NAME
+    Get-WindowsSetupTime
+
+SYNOPSIS
+    Read the Windows Install Date from the Registry
+
+
+SYNTAX
+    Get-WindowsSetupTime [[-Computer] <String>] [-AsJson] [<CommonParameters>]
+
+
+DESCRIPTION
+
+
+PARAMETERS
+    -Computer <String>
+        Read the InstallDate from a remote Computer
+
+    -AsJson [<SwitchParameter>]
+        Return results as Json string
+```
+
+Example
+
+```
+Get-WindowsSetupTime
+
+{
+    "computer":  "SP63-W-1012",
+    "product":  "Windows Server 2019 Datacenter",
+    "installDate":  "2024-01-04T14:20:06.913",
+    "installDateUtc":  "2024-01-04T14:20:06.913"
+}
+```
+
+### Get-WindowsSetupEvents
+
+Reads the Windows Setup.etl log file and extract non-null events from StartDate. Events are in RecordId order which is the order the events were written.
+
+The default SetupLog location if not supplied as a parameter is C:\Windows\Panther\setup.etl
+
+```
+NAME
+    Get-WindowsSetupEvents
+
+SYNOPSIS
+    Read the Windows Setup event log file C:\Windows\Panther\setup.etl
+
+
+SYNTAX
+    Get-WindowsSetupEvents [[-StartDate] <DateTime>] [[-SetupLog] <Object>] [-AsJson] [<CommonParameters>]
+
+
+DESCRIPTION
+
+
+PARAMETERS
+    -StartDate <DateTime>
+        DateTime after which events will be resturned
+
+    -SetupLog <Object>
+
+    -AsJson [<SwitchParameter>]
+```
