@@ -332,7 +332,6 @@ Function Get-WindowsSetupEvents {
     [CmdletBinding()]
     Param (
         [DateTime]$StartDate,
-        $MaxEvents=0,
         $SetupLog="C:\Windows\Panther\Setup.etl",
         [Switch]$AsJson
     )    
@@ -348,9 +347,6 @@ Function Get-WindowsSetupEvents {
         $params = @{
             Path=$SetupLog;
             Oldest=$true
-        }
-        if ($MaxEvents -gt 0) {
-            $params.add("MaxEvents",$MaxEvents)
         }
         # filter out events with no Message - not at all useful
         $setup = Get-WinEvent @params | Where-Object {$_.TimeCreated -gt $StartDate -and $_.Message}
