@@ -321,10 +321,10 @@ Function Get-WindowsSetupEvents {
     <#
     .SYNOPSIS
         Read the Windows Setup event log file C:\Windows\Panther\setup.etl 
-
     .PARAMETER StartDate
         DateTime after which events will be resturned
-
+    .PARAMETER AsJson
+        Return results as Json string
     .OUTPUTS
         PSCustomObject containing the Event Properties
 
