@@ -189,19 +189,19 @@ Get-WindowsAuditEvent -Recent 20 -Computer "MYDC01" -IPAddress "10.10.10.10" -Ev
 
 Added 2 new functions relating to Windows Setup
 
-### Get-WindowsSetupTime 
+### Get-WindowsSetupDate 
 Returns the Date and Time the Windows Install completed
 
 ```
 NAME
-    Get-WindowsSetupTime
+    Get-WindowsSetupDate
 
 SYNOPSIS
     Read the Windows Install Date from the Registry
 
 
 SYNTAX
-    Get-WindowsSetupTime [[-Computer] <String>] [-AsJson] [<CommonParameters>]
+    Get-WindowsSetupDate [[-Computer] <String>] [-AsJson] [<CommonParameters>]
 
 
 DESCRIPTION
@@ -218,7 +218,7 @@ PARAMETERS
 Example
 
 ```
-Get-WindowsSetupTime
+Get-WindowsSetupDate
 
 {
     "computer":  "SP63-W-1012",
