@@ -432,7 +432,8 @@ Function Read-PSLog {
     param (
         $EventId=403,
         [String]$Computer=$null,
-        [DateTime]$StartDate
+        [DateTime]$StartDate,
+        [Switch]$AsJson
     )
 
     #Default to Setup Date if no StartDate
@@ -447,9 +448,11 @@ Function Read-PSLog {
         $output = [PSCustomObject]@{
             computer=$e.MachineName;
             index=$e.index;
-            Time=$e.TimeCreated;
-            host="";command="";
-            encodedcommand=""}
+            Time=$e.TimeCreated.ToString("yyyy-MM-ddTHH:mm:ss.fff");
+            host="";
+            command="";
+            encodedcommand=""
+        }
         
         if ($e.message -match "HostName=(.*)\r") {
             $output.host=$matches[1]
@@ -463,7 +466,11 @@ Function Read-PSLog {
         }
         $output
     }
-    $eventData
+    if ($AsJson) {
+        return $eventData | ConvertTo-Json -Depth 3 
+    } else {
+        return $eventData
+    }    
 }
 
 
