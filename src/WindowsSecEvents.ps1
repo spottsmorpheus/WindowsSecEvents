@@ -409,3 +409,61 @@ Function Get-WindowsSetupDate{
     }
     
 }
+
+Function Read-PSLog {
+    <#
+    .SYNOPSIS
+        Reads the Windows Powershell logs and returns script executions. If the scriopt is Base64 encoded then
+        this script decodes and returns the actual powershell. Useful for reading any Morpheus WinRm RPC commands
+
+    .PARAMETER EventId
+        Event ID to read. Default is Event 403
+
+    .PARAMETER Computer
+        Computername. Default is local Computer
+
+    .PARAMETER StartDate
+
+    .OUTPUTS
+        DateTime when the Windows Installation completed
+
+    #>
+    [CmdletBinding()]    
+    param (
+        $EventId=403,
+        [String]$Computer=$null,
+        [DateTime]$StartDate
+    )
+
+    #Default to Setup Date if no StartDate
+    if (-Not $StartDate) {
+        $StartDate = (Get-WindowsSetupDate).installDate.Date
+    }
+    $Filter = @{LogName="Windows Powershell";Id=$EventId;StartTime=$StartDate}
+
+    $Events = Get-WinEvent -FilterHashtable $Filter | Sort-Object -Property RecordId
+
+    $eventData = foreach ($e in $Events) {
+        $output = [PSCustomObject]@{
+            computer=$e.MachineName;
+            index=$e.index;
+            Time=$e.TimeCreated;
+            host="";command="";
+            encodedcommand=""}
+        
+        if ($e.message -match "HostName=(.*)\r") {
+            $output.host=$matches[1]
+        }
+        if ($e.message -match "HostApplication=(.*)\r") {
+            $output.command=$matches[1]
+            if ($output.command -match "-encodedcommand (\S*)") {
+                #Base64 encoded command
+                $output.encodedcommand=[System.Text.Encoding]::Unicode.GetString([System.Convert]::FromBase64String($matches[1]))
+            }
+        }
+        $output
+    }
+    $eventData
+}
+
+
