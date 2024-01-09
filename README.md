@@ -257,3 +257,39 @@ PARAMETERS
 
     -AsJson [<SwitchParameter>]
 ```
+
+### Read-PSLog
+
+Reads the Windows Powershell Log and returns the scripts executed after StartDate. If StartDate is not specified then the commands executed since the Windows Install date are returned.
+
+Useful to see the WinRm commands executed by Morpheus
+
+
+
+```
+NAME
+    Read-PSLog
+
+SYNOPSIS
+    Reads the Windows Powershell logs and returns script executions. If the script is Base64 encoded then
+    this script decodes and returns the actual powershell. Useful for reading any Morpheus WinRm RPC commands
+
+
+SYNTAX
+    Read-PSLog [[-EventId] <Object>] [[-Computer] <String>] [[-StartDate] <DateTime>] [-AsJson] [<CommonParameters>]
+
+
+DESCRIPTION
+
+
+PARAMETERS
+    -EventId <Object>
+        Event ID to read. Default is Event 403
+
+    -Computer <String>
+        Computername. Default is local Computer
+
+    -StartDate <DateTime>
+
+    -AsJson [<SwitchParameter>]
+```
