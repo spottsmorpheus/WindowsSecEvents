@@ -198,9 +198,9 @@ Function Get-WindowsRestartEvent {
 
     $EventProperties = @("RecordId",@{n="TimeCreated";e={$_.TimeCreated.ToString("yyyy-MM-ddTHH:mm:ss.fff")}},"Id","MachineName","Message")
     if ($Computer) {
-        $reboot=Get-WinEvent -ErrorAction "SilentlyContinue" -Computer $Computer -FilterHashtable @{ID=@(41,6005,6006,6008,6009,6011,1074,1076);logName="System";StartTime=$Start}
+        $reboot=Get-WinEvent -ErrorAction "SilentlyContinue" -Computer $Computer -FilterHashtable @{ID=@(41,6005,6006,6008,6009,6011,6013,1074,1076);logName="System";StartTime=$Start}
     } else {
-        $reboot=Get-WinEvent -ErrorAction "SilentlyContinue" -FilterHashtable @{ID=@(41,6005,6006,6008,6009,6011,1074,1076);logName="System";StartTime=$Start}
+        $reboot=Get-WinEvent -ErrorAction "SilentlyContinue" -FilterHashtable @{ID=@(41,6005,6006,6008,6009,6011,6013,1074,1076);logName="System";StartTime=$Start}
     }
     if ($AsJson) {
        return $Reboot | Select-Object -Property $EventProperties | ConvertTo-Json -depth 3
