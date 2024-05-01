@@ -413,7 +413,7 @@ Function Get-WindowsSetupDate{
 Function Read-PSLog {
     <#
     .SYNOPSIS
-        Reads the Windows Powershell logs and returns script executions. If the scriopt is Base64 encoded then
+        Reads the Windows Powershell logs and returns script executions. If the script is Base64 encoded then
         this script decodes and returns the actual powershell. Useful for reading any Morpheus WinRm RPC commands
 
     .PARAMETER EventId
@@ -447,7 +447,7 @@ Function Read-PSLog {
     $eventData = foreach ($e in $Events) {
         $output = [PSCustomObject]@{
             computer=$e.MachineName;
-            index=$e.index;
+            index=$e.RecordId;
             Time=$e.TimeCreated.ToString("yyyy-MM-ddTHH:mm:ss.fff");
             host="";
             command="";
