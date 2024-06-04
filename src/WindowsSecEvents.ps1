@@ -474,3 +474,32 @@ Function Read-PSLog {
 }
 
 
+Function Get-RpcSessionInfo {
+    $rtn = [PSCustomObject]@{status=0;cmdOut=$Null;errOut=$Null}
+    try {
+        $winId = [System.Security.Principal.WindowsIdentity]::GetCurrent()
+        $principal = [System.Security.Principal.WindowsPrincipal]$winId
+        $tokenGroups = $winId.Groups | Foreach-Object {$_.Translate([System.Security.Principal.NTAccount]).toString()}
+        $isAdmin=$principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+        $rtn.cmdOut = [PSCustomObject]@{
+            userId=$winId.Name;
+            computerName=[Environment]::MachineName;
+            authenticationType=$winId.AuthenticationType;
+            impersonation = $winId.ImpersonationLevel.ToString();
+            isAdmin=$principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+            localProfile=[Environment]::GetEnvironmentVariable("LOCALAPPDATA");
+            tokenGroups=$tokenGroups;
+            isSystem=$winId.isSystem;
+            isService=$tokenGroups -contains "NT AUTHORITY\SERVICE";
+            isNetwork=$tokenGroups -contains "NT AUTHORITY\NETWORK";
+            isBatch=$tokenGroups -contains "NT AUTHORITY\BATCH";
+            isInteractive=$tokenGroups -contains "NT AUTHORITY\INTERACTIVE";
+            isNtlmToken=$tokenGroups -contains "NT AUTHORITY\NTLM Authentication"
+        }
+    }
+    catch {
+        $rtn.status=1
+        $rtn.errOut = [PSCustomObject]@{message="Error while querying session details. Exception: {0}" -F $_.Exception.Message}
+    }
+    return $rtn
+}
