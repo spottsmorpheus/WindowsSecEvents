@@ -293,3 +293,19 @@ PARAMETERS
 
     -AsJson [<SwitchParameter>]
 ```
+
+### Get-RpcSessionInfo
+
+This function is useful for determining the current session privileges
+
+NAME
+    Get-RpcSessionInfo
+
+SYNOPSIS
+    Returns details of the current connected Windows settion including Authentication type, Groups tokens and logon
+    type
+    Useful for debuging session issues
+
+
+SYNTAX
+    Get-RpcSessionInfo [-AsJson] [<CommonParameters>]

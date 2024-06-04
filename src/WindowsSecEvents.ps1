@@ -475,6 +475,23 @@ Function Read-PSLog {
 
 
 Function Get-RpcSessionInfo {
+    <#
+    .SYNOPSIS
+        Returns details of the current connected Windows settion including Authentication type, Groups tokens and logon type
+        Useful for debuging session issues
+
+    .PARAMETER AsJson
+        Return results as Json string
+    .OUTPUTS
+        Custom object or json string with the session details
+
+    #>
+    [CmdletBinding()]
+    param (
+        [Parameter()]
+        [Switch]
+        $AsJson
+    )
     $rtn = [PSCustomObject]@{status=0;cmdOut=$Null;errOut=$Null}
     try {
         $winId = [System.Security.Principal.WindowsIdentity]::GetCurrent()
@@ -501,5 +518,9 @@ Function Get-RpcSessionInfo {
         $rtn.status=1
         $rtn.errOut = [PSCustomObject]@{message="Error while querying session details. Exception: {0}" -F $_.Exception.Message}
     }
-    return $rtn
+    if ($AsJson) {
+        return $rtn | ConvertTo-Json -Depth 3
+    } else {
+        return $rtn
+    }
 }
