@@ -498,9 +498,14 @@ Function Get-RpcSessionInfo {
         $principal = [System.Security.Principal.WindowsPrincipal]$winId
         $tokenGroups = $winId.Groups | Foreach-Object {$_.Translate([System.Security.Principal.NTAccount]).toString()}
         $isAdmin=$principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+        $PCInfo = Get-WmiObject -Class Win32_ComputerSystem
         $rtn.cmdOut = [PSCustomObject]@{
             userId=$winId.Name;
             computerName=[Environment]::MachineName;
+            manufacturer = $PCInfo.manufacturer;
+            model = $PCInfo.model;
+            domainName = $PCInfo.Domain;
+            domainJoined = $PCInfo.PartOfDomain;
             authenticationType=$winId.AuthenticationType;
             impersonation = $winId.ImpersonationLevel.ToString();
             isAdmin=$principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
