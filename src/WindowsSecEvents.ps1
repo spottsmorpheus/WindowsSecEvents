@@ -529,3 +529,39 @@ Function Get-RpcSessionInfo {
         return $rtn
     }
 }
+
+Function Restart-Instance {
+    <#
+    .SYNOPSIS
+        Returns details of the current connected Windows settion including Authentication type, Groups tokens and logon type
+        Useful for debuging session issues
+
+    .PARAMETER AsJson
+        Return results as Json string
+    .OUTPUTS
+        Custom object or json string with the session details
+
+    #>
+    [CmdletBinding()]
+    param (
+        [Parameter()]
+        [String]
+        $Comment="Morpheus is Rebooting the instance",
+        [UInt32]
+        $Delay=20
+    )
+    
+    $rtn = [PSCustomObject]@{status=0;cmdOut="";errOut=""}
+    try {
+        $winOS = Get-WmiObject -Class Win32_OperatingSystem -EnableAllPrivileges -ErrorAction Stop
+        $result = $winOS.Win32ShutdownTracker($Delay,$Comment,0x0,0x6)
+        $rtn.status = $result.ReturnValue
+        $rtn.cmdOut = "Restarting {0} in {1} seconds - Reason {2}" -f $Env:ComputerName, $Delay, $Comment
+    }
+    catch {
+        $rtn.status = 1
+        $rtn.cmdOut = "Failed to initiate Reboot of {0}" -f $Env:ComputerName
+        $rtn.errOut = $_.Exception.Message
+    }
+    $rtn | ConvertTo-Json
+}
