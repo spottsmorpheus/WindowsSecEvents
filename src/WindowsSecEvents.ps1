@@ -516,7 +516,12 @@ Function Get-RpcSessionInfo {
             isNetwork=$tokenGroups -contains "NT AUTHORITY\NETWORK";
             isBatch=$tokenGroups -contains "NT AUTHORITY\BATCH";
             isInteractive=$tokenGroups -contains "NT AUTHORITY\INTERACTIVE";
-            isNtlmToken=$tokenGroups -contains "NT AUTHORITY\NTLM Authentication"
+            isNtlmToken=$tokenGroups -contains "NT AUTHORITY\NTLM Authentication";
+            osVersion = [Environment]::OSVersion.VersionString;
+            systemDrive = [Environment]::GetEnvironmentVariable("SystemDrive");
+            psVersion=$PSVersionTable.PSVersion.ToString();
+            psEdition=$PSVersionTable.PSEdition;
+            psExePath=(Get-Process -Id $Pid).Path
         }
     }
     catch {
